@@ -5,7 +5,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import pandas as pd
 
 
-#run test script
+# run test script
 sample = ""
 t = 0
 v = 0
@@ -16,7 +16,7 @@ while sample != "stop":
     sample = input("Enter sample sentence: \n")
 
     if sample == "stop":
-           break
+        break
 
     if sample == "check":
            print("\n--------------SCORE------------\n") 
