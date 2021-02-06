@@ -1,11 +1,15 @@
 import os
 from configparser import RawConfigParser
 import praw
+from prawcore.exceptions import NotFound
 
 
 class RedditScraper:
 
     def __init__(self):
+        """
+        Logs into reddit and creates a self.reddit object to be used in the rest of Reddit Scraper
+        """
 
         # Set Config Directory
         _config_dir = 'config'
@@ -22,7 +26,7 @@ class RedditScraper:
 
         try:
             # Login with password flow
-            reddit = praw.Reddit(
+            self.reddit = praw.Reddit(
                 client_id=self.config['login']['client_id'],
                 client_secret=self.config['login']['client_secret'],
                 password=self.config['login']['password'],
@@ -31,7 +35,8 @@ class RedditScraper:
             )
 
             # Print username if login successful
-            print(reddit.user.me())
+            user_name = self.reddit.user.me()
+            print(user_name)
 
         except KeyError as e:
             _error_message = 'Key error encountered while attempting to login. Ensure that your login file is \
@@ -42,11 +47,76 @@ class RedditScraper:
             _error_message = 'Unexpected error occurred.'
             print(f'{e}\n{_error_message}')
 
-    def scrape_post(self):
-        pass
+    def extract_post_data(self, submission_id=None, submission_url=None):
+        """
+        Creates a submission object and populates it with submission data from reddit. Either a submission id or
+        a submission_url is required.
 
+        :param str submission_id: Praw Submission.id
+        :param str submission_url: Praw Submission.url
+        :return dict submission_dict: Dict containing submission object and raw information
+        """
 
+        '''
+        Get submission object
+        '''
 
-if __name__ == '__main__':
+        _error_message = None
+        _submission = None
 
-    r = RedditScraper()
+        if submission_id and not submission_url:
+
+            _submission = self.reddit.submission(id=submission_id)
+
+        elif submission_url and not submission_id:
+
+            _submission = self.reddit.submission(url=submission_url)
+
+        elif submission_id and submission_url:
+
+            _error_message = 'Please provide either a submission id or a submission url, not both.'
+
+        '''
+        Populate submission_dict
+        '''
+
+        if _submission:
+
+            try:
+                # Create submission dict using values from _submission object
+                submission_dict = {
+                    'submission_object': _submission,
+                    'title': _submission.title,
+                    'selftext': _submission.selftext,
+                    'subreddit': _submission.subreddit,
+                    'author': _submission.author,
+                    'score': _submission.score,
+                    'upvote_ratio': _submission.upvote_ratio,
+                    'locked': _submission.locked,
+                    'id': _submission.id,
+                    'url': _submission.url,
+                    'error': None
+                }
+
+            except NotFound:
+                if submission_id:
+                    _feedback = f'id: {submission_id}.'
+                elif submission_url:
+                    _feedback = f'url: {submission_url}.'
+                _error_message = f'Received 404 HTTP response while trying to get submission using {_feedback}'
+                print(_error_message)
+
+        if _error_message:
+            submission_dict = {
+                'error': _error_message
+            }
+
+        return submission_dict
+
+    @staticmethod
+    def extract_post_comments_data(submission):
+
+        try:
+            comments = submission.comments
+        except:
+            pass
