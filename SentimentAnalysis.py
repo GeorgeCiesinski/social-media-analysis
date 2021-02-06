@@ -19,9 +19,9 @@ while sample != "stop":
         break
 
     if sample == "check":
-           print("\n--------------SCORE------------\n") 
-           print(f"TexBlob : {t}\nVader : {v}\n")  
-           continue   
+        print("\n--------------SCORE------------\n")
+        print(f"TexBlob : {t}\nVader : {v}\n")
+        continue
        
     #TextBlobsentiment analysis
     analysis = TextBlob(sample)
