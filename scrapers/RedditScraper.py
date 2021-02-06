@@ -1,3 +1,8 @@
+"""
+Author: George Ciesinski
+Date: Feb 06 2021
+"""
+
 import os
 from configparser import RawConfigParser
 import praw
@@ -117,6 +122,10 @@ class RedditScraper:
     def extract_post_comments_data(submission):
 
         try:
-            comments = submission.comments
-        except:
+            # Replace all
+            submission.comments.replace_more(limit=None)
+            for top_level_comment in submission.comments:
+                print(top_level_comment.body)
+
+        except Exception as E:
             pass
