@@ -47,3 +47,16 @@ def test_extract_post_data_url():
 
 	# Check if dict has errors
 	assert submission_dict.get('error') is None
+
+
+def test_extract_post_data_url_fail():
+
+	# Login to Praw
+	r = RedditScraper()
+
+	_bad_submission_url = 'https://www.reddit.com/r/redditdev/comments/a1s2d3f4/praw_howhowhowhowhowhow'
+	# Get submission dict
+	submission_dict = r.extract_post_data(submission_url=_bad_submission_url)
+
+	# Check if dict has errors
+	assert submission_dict.get('error') is not None
