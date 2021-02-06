@@ -121,11 +121,28 @@ class RedditScraper:
     @staticmethod
     def extract_post_comments_data(submission):
 
+        comments_list = []
+
         try:
             # Replace all
             submission.comments.replace_more(limit=None)
-            for top_level_comment in submission.comments:
-                print(top_level_comment.body)
 
-        except Exception as E:
-            pass
+            for top_level_comment in submission.comments:
+
+                # Todo: Number of replies
+
+                comment_dict = {
+                    'id': top_level_comment.id,
+                    'author': top_level_comment.author,
+                    'body': top_level_comment.body,
+                    'score': top_level_comment.score,
+                    'saved': top_level_comment.saved,
+                    'number_of_replies': 0
+                }
+
+                comments_list.append(comment_dict)
+
+        except Exception as e:
+            print(f'Encountered unexpected error: \n {e}')
+
+        return comments_list
