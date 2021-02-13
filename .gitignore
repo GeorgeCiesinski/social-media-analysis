@@ -2,3 +2,5 @@
 .idea
 /config/login.ini
 __pycache__/
+config/connection_string.txt
+.DS_Store
