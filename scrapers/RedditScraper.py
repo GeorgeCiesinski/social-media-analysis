@@ -57,8 +57,8 @@ class RedditScraper:
         Creates a submission object and populates it with submission data from reddit. Either a submission id or
         a submission_url is required.
 
-        :param str submission_id: Praw Submission.id
         :param str submission_url: Praw Submission.url
+        :param str submission_id: Praw Submission.id
         :return dict submission_dict: Dict containing submission object and raw information
         """
 
@@ -134,7 +134,7 @@ class RedditScraper:
 
                 comment = {
                     'id': top_level_comment.id,
-                    'author': top_level_comment.author,
+                    'author': top_level_comment.author.name,
                     'body': top_level_comment.body,
                     'score': top_level_comment.score,
                     'saved': top_level_comment.saved,
