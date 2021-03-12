@@ -1,3 +1,7 @@
+"""
+Author: Saif Gorges
+Date: March 3 2021
+"""
 
 #import dependencies
 from textblob import TextBlob

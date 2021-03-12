@@ -1,0 +1,53 @@
+{
+  "data": [
+    {
+      'id': 'gma6rv0',
+      'author': 'Al_Caprone1',
+      'body': 'Did you bring the black guy?\n\nNo, I thought you had him',
+      'score': 3311,
+      'saved': False,
+      'number_of_replies': 0,
+      'sentiment': [
+        -0.16666666666666666,
+        ' Negative'
+      ]
+    },
+    {
+      'id': 'gm9upuf',
+      'author': 'Confidence_Familiar',
+      'body': "It's like the anti abortion booths, always staffed by men.",
+      'score': 1214,
+      'saved': False,
+      'number_of_replies': 0,
+      'sentiment': [
+        0.0,
+        ' Neutral'
+      ]
+    },
+    {
+      'id': 'gma65hk',
+      'author': 'DodGamnBunofaSitch',
+      'body': "I'd really like to see a source on this, just to be certain it's not about a town, community, or family named 'Black'. \n\nI just like my outrage to be fully informed *and* vetted.",
+      'score': 438,
+      'saved': False,
+      'number_of_replies': 0,
+      'sentiment': [
+        0.08253968253968254,
+        ' Positive'
+      ]
+    },
+    {
+      'id': 'gmaadt7',
+      'author': 'DMoney159',
+      'body': '"As a gay black man"',
+      'score': 258,
+      'saved': False,
+      'number_of_replies': 0,
+      hy
+      'sentiment': [
+        0.125,
+        ' Positive'
+      ]
+    }
+  ]
+}
