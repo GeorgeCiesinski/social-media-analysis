@@ -2,13 +2,19 @@
 from textblob import TextBlob
 
 
-def list_parser(redditData):
+def list_parser(comments_dict):
 
-    for comment in redditData:
+    # Extract comment_data from comments_dict
+    comment_data = comments_dict.get('data')
+
+    # Iterate through comment_data and add sentiment_result list
+    for comment in comment_data:
         body = comment.get('body')
         sentiment_result = sentiment_analysis(body)
         comment['sentiment'] = sentiment_result
 
+    # Updates comments_dict with modified data
+    comments_dict['data'] = comment_data
 
 def sentiment_analysis(body):
 

@@ -8,18 +8,24 @@ r = RedditScraper()
 # Get submission dict
 submission_url = input('Enter the post url: ')
 submission_dict = r.extract_post_data(submission_url=submission_url)
-print(submission_dict)
 
 # Get list of comments_dicts
 submission_object = submission_dict.get('submission_object')
-list_of_comments = r.extract_post_comments_data(submission_object)
+comments_dict = r.extract_post_comments_data(submission_object)
 
 # Call sentimentanalysis to analyze the comments and append the dicts
-SentimentAnalysis.list_parser(list_of_comments)
+SentimentAnalysis.list_parser(comments_dict)
 
-print(list_of_comments)
+# Temporarily output data for debugging
+# Todo: Update to remove once SQLAlchemy is working
+print("Scrape Complete. See outputs.")
 
-with open('output/comment_list.txt', "w+") as text_file:
-	text_file.write(str(list_of_comments))
+# Output submission data
+with open('output/submission_dict.txt', "w+") as text_file:
+	text_file.write(str(submission_dict))
+
+# Output comment data
+with open('output/comments_dict.txt', "w+") as text_file:
+	text_file.write(str(comments_dict))
 
 # Use SQLAlchemy to store submission data into submission table, and comment data into comment table (relationship)

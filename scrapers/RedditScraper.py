@@ -57,8 +57,8 @@ class RedditScraper:
         Creates a submission object and populates it with submission data from reddit. Either a submission id or
         a submission_url is required.
 
-        :param str submission_id: Praw Submission.id
         :param str submission_url: Praw Submission.url
+        :param str submission_id: Praw Submission.id
         :return dict submission_dict: Dict containing submission object and raw information
         """
 
@@ -122,6 +122,7 @@ class RedditScraper:
     def extract_post_comments_data(submission):
 
         comments_list = []
+        comments_dict = {}
 
         try:
             # Replace all
@@ -131,18 +132,25 @@ class RedditScraper:
 
                 # Todo: Number of replies
 
-                comment_dict = {
+                comment = {
                     'id': top_level_comment.id,
-                    'author': top_level_comment.author,
+                    'author': top_level_comment.author.name,
                     'body': top_level_comment.body,
                     'score': top_level_comment.score,
                     'saved': top_level_comment.saved,
                     'number_of_replies': 0
                 }
 
-                comments_list.append(comment_dict)
+                comments_list.append(comment)
+
+            comments_dict = {
+                "data": comments_list
+            }
 
         except Exception as e:
             print(f'Encountered unexpected error: \n {e}')
+            comments_dict = {
+                "error": "Unable to populate comments_dict. Check log files."
+            }
 
-        return comments_list
+        return comments_dict
