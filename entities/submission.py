@@ -2,6 +2,7 @@ from entities.base import Base
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
+
 class Submission(Base):
 
 	__tablename__ = 'submission'
@@ -14,4 +15,3 @@ class Submission(Base):
 
 	# Relationships
 	comment = relationship('Comment')  # One to many relationship
-
