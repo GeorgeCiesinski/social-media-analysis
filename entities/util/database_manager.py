@@ -23,11 +23,26 @@ class DatabaseManager:
 		self.session.close()
 
 	def check_submission_id(self, submission_dict):
+		"""
+		Checks if a submission id already exists in database, and returns True or False.
+
+		:param dict submission_dict: Dict containing submission information
+		:return bool submission_exists: Value representing whether submission exists in database
+		"""
+
+		submission_exists = None
 
 		# Todo: Check if the submission exists using id
-		pass
+
+		return submission_exists
 
 	def insert_submission(self, submission_dict):
+		"""
+		Creates a submission object, inserts into the database, and returns the object with newly generated id.
+
+		:param dict submission_dict: Dict containing submission information
+		:return Submission submission: An instance of the Submission object
+		"""
 
 		# Insert Submission Data
 
@@ -52,6 +67,13 @@ class DatabaseManager:
 		return _new_submission
 
 	def insert_comments(self, comments_dict, submission):
+		"""
+		Iterates through the list of comments and creates comment objects. Inserts the comment objects into the
+		database.
+
+		:param dict comments_dict: Dict containing a list of comment dicts
+		:param Submission submission: An instance of the Submission object
+		"""
 
 		# Extract comment_data from comments_dict
 		_comment_data = comments_dict.get('data')
@@ -75,6 +97,12 @@ class DatabaseManager:
 		self.session.commit()
 
 	def insert_sentiment(self, comments_dict):
+		"""
+		Iterates through the list of comments, extracts sentiment data,  and creates sentiment objects. Inserts the
+		sentiment objects into the database.
+
+		:param dict comments_dict: Dict containing a list of comment dicts
+		"""
 
 		# Extract comment_data from comments_dict
 		_comment_data = comments_dict.get('data')
