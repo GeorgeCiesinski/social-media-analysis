@@ -1,4 +1,3 @@
-# import dependencies
 from textblob import TextBlob
 
 
@@ -15,6 +14,7 @@ def list_parser(comments_dict):
 
     # Updates comments_dict with modified data
     comments_dict['data'] = comment_data
+
 
 def sentiment_analysis(body):
 
