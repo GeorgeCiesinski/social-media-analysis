@@ -1,6 +1,7 @@
 from entities.base import Session
 from entities.submission import Submission
 from entities.comment import Comment
+from entities.sentiment import Sentiment
 
 # exceptions
 from sqlalchemy.exc import IntegrityError
@@ -53,22 +54,39 @@ class DatabaseManager:
 	def insert_comments(self, comments_dict, submission):
 
 		# Extract comment_data from comments_dict
-		comment_data = comments_dict.get('data')
+		_comment_data = comments_dict.get('data')
 
 		# Iterate through comment_data and add sentiment_result list
-		for comment in comment_data:
+		for _comment in _comment_data:
 
 			new_comment = Comment(
-				id=comments_dict.get('id'),
+				id=_comment.get('id'),
 				submission_id=submission.id,
-				author=comments_dict.get('author'),
-				body=comments_dict.get('body'),
-				score=comments_dict.get('score'),
-				saved=comments_dict.get('saved'),
-				number_of_replies=comments_dict.get('number_of_replies'),
-				created_utc=comments_dict.get('created_utc'),
+				author=_comment.get('author'),
+				body=_comment.get('body'),
+				score=_comment.get('score'),
+				saved=_comment.get('saved'),
+				number_of_replies=_comment.get('number_of_replies'),
+				created_utc=_comment.get('created_utc'),
 			)
 
 			self.session.add(new_comment)
+
+		self.session.commit()
+
+	def insert_sentiment(self, comments_dict):
+
+		# Extract comment_data from comments_dict
+		_comment_data = comments_dict.get('data')
+
+		# Iterate through comment_data and add sentiment_result list
+		for _comment in _comment_data:
+			new_sentiment = Sentiment(
+				comment_id=_comment.get('id'),
+				polarity=_comment.get('sentiment')[0],
+				sentiment=_comment.get('sentiment')[1]
+			)
+
+			self.session.add(new_sentiment)
 
 		self.session.commit()

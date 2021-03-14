@@ -45,10 +45,11 @@ print("Scrape Complete. See outputs.")
 Insert to Database
 '''
 
-dm = DatabaseManager()
+database_manager = DatabaseManager()
 
-new_submission = dm.insert_submission(submission_dict)
+new_submission = database_manager.insert_submission(submission_dict)
 
 # Insert comments if submission inserted successfully
 if new_submission is not None:
-	dm.insert_comments(comments_dict, new_submission)
+	database_manager.insert_comments(comments_dict, new_submission)
+	database_manager.insert_sentiment(comments_dict)

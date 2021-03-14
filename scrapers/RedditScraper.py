@@ -5,9 +5,16 @@ Latest update: Mar 13 2021
 """
 
 import os
+from datetime import datetime
 from configparser import RawConfigParser
 import praw
 from prawcore.exceptions import NotFound
+
+# logging
+from logs.Logger import base_logger
+
+
+logger = base_logger.getChild(__name__)
 
 
 class RedditScraper:
@@ -52,6 +59,14 @@ class RedditScraper:
         except Exception as e:
             _error_message = 'Unexpected error occurred.'
             print(f'{e}\n{_error_message}')
+
+    def unix_to_datetime(self, unix_time):
+
+        time_stamp = int(unix_time)
+
+        date_time = datetime.utcfromtimestamp(time_stamp).strftime('%Y-%m-%d %H:%M:%S')
+
+        return date_time
 
     def extract_post_data(self, submission_id=None, submission_url=None):
         """
@@ -101,6 +116,7 @@ class RedditScraper:
                     'locked': _submission.locked,
                     'id': _submission.id,
                     'url': _submission.url,
+                    'created_utc': self.unix_to_datetime(_submission.created_utc),
                     'error': None
                 }
 
@@ -113,14 +129,14 @@ class RedditScraper:
                 print(_error_message)
 
         if _error_message:
+            logger.error(_error_message)
             submission_dict = {
                 'error': _error_message
             }
 
         return submission_dict
 
-    @staticmethod
-    def extract_post_comments_data(submission):
+    def extract_post_comments_data(self, submission):
 
         comments_list = []
         comments_dict = {}
@@ -131,7 +147,10 @@ class RedditScraper:
 
             for top_level_comment in submission.comments:
 
-                # Todo: Number of replies
+                # Replace all replies
+                top_level_comment.replies.replace_more(limit=None)
+
+                number_of_replies = len(top_level_comment.replies)
 
                 comment = {
                     'id': top_level_comment.id,
@@ -139,7 +158,8 @@ class RedditScraper:
                     'body': top_level_comment.body,
                     'score': top_level_comment.score,
                     'saved': top_level_comment.saved,
-                    'number_of_replies': 0
+                    'number_of_replies': number_of_replies,
+                    'created_utc': self.unix_to_datetime(top_level_comment.created_utc)
                 }
 
                 comments_list.append(comment)
