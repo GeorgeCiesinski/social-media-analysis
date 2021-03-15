@@ -45,8 +45,15 @@ print("Scrape Complete. See outputs.")
 Insert to Database
 '''
 
+# Create instance of database_manager
 database_manager = DatabaseManager()
 
+# Check if submission exists
+if not database_manager.check_submission_id(submission_dict.get('id')):
+	# What to do if submission exists? Update, delete/replace, or don't update?
+	pass
+
+# Insert submission into database
 new_submission = database_manager.insert_submission(submission_dict)
 
 # Insert comments if submission inserted successfully

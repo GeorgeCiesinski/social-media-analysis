@@ -5,6 +5,7 @@ from entities.sentiment import Sentiment
 
 # exceptions
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 # logging
 from logs.Logger import base_logger
@@ -30,11 +31,24 @@ class DatabaseManager:
 		:return bool submission_exists: Value representing whether submission exists in database
 		"""
 
-		submission_exists = None
+		submission_id = submission_dict.get('id')
 
-		# Todo: Check if the submission exists using id
+		submission = None
 
-		return submission_exists
+		# Check if the submission exists using id
+		try:
+			submission = self.session.query(Submission) \
+				.filter(submission.id == submission_id) \
+				.one()
+		except(NoResultFound, MultipleResultsFound) as e:
+			logger.warning('Could not find submission_id in the database.')
+			logger.warning(e)
+
+		return submission
+
+	'''
+	DATABASE INSERTION
+	'''
 
 	def insert_submission(self, submission_dict):
 		"""
@@ -118,3 +132,7 @@ class DatabaseManager:
 			self.session.add(new_sentiment)
 
 		self.session.commit()
+
+		'''
+		DATABASE EXTRACTION
+		'''
