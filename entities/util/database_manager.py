@@ -23,7 +23,7 @@ class DatabaseManager:
 	def __del__(self):
 		self.session.close()
 
-	def check_submission_id(self, submission_dict):
+	def check_submission_exists(self, submission_dict):
 		"""
 		Checks if a submission id already exists in database, and returns True or False.
 
@@ -38,7 +38,7 @@ class DatabaseManager:
 		# Check if the submission exists using id
 		try:
 			submission = self.session.query(Submission) \
-				.filter(submission.id == submission_id) \
+				.filter(Submission.id == submission_id) \
 				.one()
 		except(NoResultFound, MultipleResultsFound) as e:
 			logger.warning('Could not find submission_id in the database.')
@@ -133,6 +133,47 @@ class DatabaseManager:
 
 		self.session.commit()
 
-		'''
-		DATABASE EXTRACTION
-		'''
+	'''
+	DATABASE EXTRACTION
+	'''
+
+	def extract_submission(self, submission):
+
+		# Get submission id
+		submission_id = submission.get('id')
+
+		# Extract result from database
+		result = self.session.query(Submission) \
+			.filter(Submission.id == submission_id) \
+			.one()
+
+		# Todo: Get the dict using better method
+		print(str(result.__dict__))
+
+	def extract_comments(self, submission):
+
+		pass
+
+	def extract_sentiment(self, comment_id):
+
+		pass
+
+	def create_comments_dict(self, submission_id):
+
+		pass
+
+	'''
+	DATABASE DELETION
+	'''
+
+	def delete_submission(self):
+
+		pass
+
+	def delete_comments(self):
+
+		pass
+
+	def delete_sentiment(self):
+
+		pass
