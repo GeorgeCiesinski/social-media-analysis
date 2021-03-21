@@ -1,4 +1,5 @@
 import logging
+from dictalchemy import make_class_dictable
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -22,3 +23,6 @@ Session = sessionmaker(bind=engine)
 
 # Initialize the declarative_base for ORM
 Base = declarative_base()
+
+# Adds asdict() and fromdict() to Base class
+make_class_dictable(Base)

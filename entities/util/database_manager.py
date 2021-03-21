@@ -138,23 +138,57 @@ class DatabaseManager:
 	'''
 
 	def extract_submission(self, submission):
+		"""
+
+		:param dict submission:
+		:return dict submission_dict:
+		"""
+
+		# Todo: Make submission submission dict instead, maybe get rid of return?
+
+		# Get submission id
+		submission_id = submission.get('id')
+
+		try:
+			# Extract result from database
+			result = self.session.query(Submission) \
+				.filter(Submission.id == submission_id) \
+				.one()
+			submission_dict = result.asdict()
+
+		except (NoResultFound, MultipleResultsFound) as e:
+			_error_message = f'Unable to find submission {submission_id} in database.'
+			logger.error(_error_message)
+			logger.error(e)
+			submission_dict = {
+				'error': _error_message
+			}
+
+		return submission_dict
+
+	def extract_comments(self, submission):
 
 		# Get submission id
 		submission_id = submission.get('id')
 
 		# Extract result from database
-		result = self.session.query(Submission) \
-			.filter(Submission.id == submission_id) \
-			.one()
+		result = self.session.query(Comment) \
+			.filter(Comment.submission_id == submission_id) \
+			.all()
 
-		# Todo: Get the dict using better method
-		print(str(result.__dict__))
+		print(isinstance(result, list))
+		print(type(result))
 
-	def extract_comments(self, submission):
+		comments_dict = {
+			'data': [
+				item.asdict()
+				for item in result
+			]
+		}
 
-		pass
+		return comments_dict
 
-	def extract_sentiment(self, comment_id):
+	def extract_sentiment(self, comments_dict):
 
 		pass
 
