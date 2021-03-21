@@ -22,10 +22,19 @@ def sentiment_analysis(body):
     analysis = TextBlob(body)
 
     if analysis.polarity > 0:
-        result = [analysis.polarity, " Positive"]
+        result = {
+            'polarity': analysis.polarity,
+            'sentiment': 'Positive'
+        }
     elif analysis.polarity == 0:
-        result = [analysis.polarity, " Neutral"]
+        result = {
+            'polarity': analysis.polarity,
+            'sentiment': 'Neutral'
+        }
     else:
-        result = [analysis.polarity, " Negative"]
+        result = {
+            'polarity': analysis.polarity,
+            'sentiment': 'Negative'
+        }
 
     return result

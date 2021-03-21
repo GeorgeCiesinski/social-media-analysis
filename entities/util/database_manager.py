@@ -1,3 +1,4 @@
+from sqlalchemy.orm import joinedload
 from entities.base import Session
 from entities.submission import Submission
 from entities.comment import Comment
@@ -123,10 +124,14 @@ class DatabaseManager:
 
 		# Iterate through comment_data and add sentiment_result list
 		for _comment in _comment_data:
+
+			# Extract sentiment dict from comment dict
+			_sentiment_dict = _comment.get('sentiment')
+
 			new_sentiment = Sentiment(
 				comment_id=_comment.get('id'),
-				polarity=_comment.get('sentiment')[0],
-				sentiment=_comment.get('sentiment')[1]
+				polarity=_sentiment_dict.get('polarity'),
+				sentiment=_sentiment_dict.get('sentiment')
 			)
 
 			self.session.add(new_sentiment)
@@ -137,17 +142,19 @@ class DatabaseManager:
 	DATABASE EXTRACTION
 	'''
 
-	def extract_submission(self, submission):
+	def extract_submission(self, submission_dict):
 		"""
+		Receives partial submission_dict, which must at least include the id. Finds the submission in the database
+		and replaces the data in the dict with data from the database. Does not return anything as submission_dict is
+		mutable.
 
-		:param dict submission:
-		:return dict submission_dict:
+		:param dict submission_dict: Partial or complete submission_dict containing at least the id.
 		"""
 
 		# Todo: Make submission submission dict instead, maybe get rid of return?
 
 		# Get submission id
-		submission_id = submission.get('id')
+		submission_id = submission_dict.get('id')
 
 		try:
 			# Extract result from database
@@ -166,19 +173,24 @@ class DatabaseManager:
 
 		return submission_dict
 
-	def extract_comments(self, submission):
+	def extract_comments(self, submission_dict):
+		"""
+		Receives partial submission_dict, which must at least include the id. Creates a comments_dict and populates it
+		with comments with the same id. Returns comments_dict. DOES NOT INCLUDE SENTIMENT DATA.
+
+		:param dict submission_dict: Partial or complete submission_dict containing at least the id.
+		:return dict comments_dict: Dict containing data, which is a list of individual comment dicts.
+		"""
 
 		# Get submission id
-		submission_id = submission.get('id')
+		submission_id = submission_dict.get('id')
 
 		# Extract result from database
 		result = self.session.query(Comment) \
 			.filter(Comment.submission_id == submission_id) \
 			.all()
 
-		print(isinstance(result, list))
-		print(type(result))
-
+		# Store comments as dicts in a list stored in the 'data' key.
 		comments_dict = {
 			'data': [
 				item.asdict()
@@ -188,13 +200,54 @@ class DatabaseManager:
 
 		return comments_dict
 
-	def extract_sentiment(self, comments_dict):
+	def extract_sentiment(self, comment_id):
+		"""
+
+		:param str comment_id: A string id representing the comment the sentiment is for.
+		:return list sentiment: A list containing the polarity and sentiment.
+		"""
+
+		# Todo: complete this later
 
 		pass
 
-	def create_comments_dict(self, submission_id):
+	def extract_comments_sentiment(self, submission_dict):
+		"""
+		Receives partial submission_dict, which must at least include the id. Creates a comments_dict and populates it
+		with comments with the same id as well as their sentiment data. Returns comments_dict.
 
-		pass
+		:param dict submission_dict: Partial or complete submission_dict containing at least the id.
+		:return dict comments_dict: Dict containing comment and sentiment data.
+		"""
+
+		# Get submission id
+		submission_id = submission_dict.get('id')
+
+		result = self.session.query(Comment).options(
+			joinedload(Comment.sentiment)
+		).all()
+
+		# Store comments as dicts in a list stored in the 'data' key.
+		comments_dict = {
+			'data': [
+				# Use asdict to return a dict of columns/keys and values
+				item.asdict(
+					follow={
+						# append sentiment data from joinedload query to Comment dict
+						'sentiment': {
+							# Only include polarity and sentiment columns
+							'only': [
+								'polarity',
+								'sentiment'
+							]
+						}
+					}
+				)
+				for item in result
+			]
+		}
+
+		return comments_dict
 
 	'''
 	DATABASE DELETION
