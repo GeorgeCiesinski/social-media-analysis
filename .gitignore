@@ -6,3 +6,4 @@ config/connection_string.txt
 .DS_Store
 /output/comments_dict.txt
 /output/submission_dict.txt
+/logs/*

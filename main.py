@@ -37,16 +37,22 @@ with open('output/submission_dict.txt', "w+") as text_file:
 with open('output/comments_dict.txt', "w+") as text_file:
 	text_file.write(str(comments_dict))
 
-# Temporarily output data for debugging
-# Todo: Update to remove once SQLAlchemy is working
+# Completion notice
 print("Scrape Complete. See outputs.")
 
 '''
 Insert to Database
 '''
 
+# Create instance of database_manager
 database_manager = DatabaseManager()
 
+# Check if submission exists
+if database_manager.check_submission_exists(submission_dict):
+	# Todo: Delete old sentiment, comment, and submission data
+	pass
+
+# Insert submission into database
 new_submission = database_manager.insert_submission(submission_dict)
 
 # Insert comments if submission inserted successfully
