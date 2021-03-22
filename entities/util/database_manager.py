@@ -202,6 +202,7 @@ class DatabaseManager:
 
 	def extract_sentiment(self, comment_id):
 		"""
+		TBA, function is incomplete.
 
 		:param str comment_id: A string id representing the comment the sentiment is for.
 		:return list sentiment: A list containing the polarity and sentiment.
@@ -253,14 +254,37 @@ class DatabaseManager:
 	DATABASE DELETION
 	'''
 
-	def delete_submission(self):
+	def delete_submission(self, submission_dict):
+		"""
+		Deletes the submission from the submission table, as well as child entries in the comment and sentiment tables.
+		Adds a new key to submission_dict indicating whether the delete was successful or not.
 
-		pass
+		:param submission_dict:
+		"""
 
-	def delete_comments(self):
+		submission_id = submission_dict.get('id')
 
-		pass
+		submission = None
 
-	def delete_sentiment(self):
+		# Check if the submission exists using id
+		try:
+			submission = self.session.query(Submission) \
+				.filter(Submission.id == submission_id) \
+				.one()
+		except(NoResultFound, MultipleResultsFound) as e:
+			logger.warning(f'Could not find submission_id {submission_id} in the database.')
+			logger.warning(e)
 
-		pass
+		# Delete the Submission
+		try:
+			self.session.delete(submission)
+			self.session.commit()
+
+			submission_dict['submission_deleted'] = True
+
+		except Exception as e:
+			# Todo: If an unexpected exception occurred, handle it
+			logger.error('Unexpected exception occurred:')
+			logger.error(e)
+
+			submission_dict['submission_deleted'] = False

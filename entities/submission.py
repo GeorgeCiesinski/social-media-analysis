@@ -14,4 +14,4 @@ class Submission(Base):
 	created_utc = Column(DateTime)
 
 	# Relationships
-	comment = relationship('Comment')  # One to many relationship
+	comment = relationship('Comment', cascade='all, delete', backref='submission')  # One to many relationship

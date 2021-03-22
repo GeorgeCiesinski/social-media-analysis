@@ -11,7 +11,3 @@ class Sentiment(Base):
 	comment_id = Column(String, ForeignKey('comment.id'))
 	polarity = Column(Float)
 	sentiment = Column(String)
-
-	# Relationship
-	comment = relationship('Comment', uselist=False)
-
