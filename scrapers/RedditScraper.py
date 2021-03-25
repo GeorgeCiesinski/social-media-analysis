@@ -24,6 +24,8 @@ class RedditScraper:
         Logs into reddit and creates a self.reddit object to be used in the rest of Reddit Scraper
         """
 
+        logger.info('Reading PRAW login config.')
+
         # Set Config Directory
         _config_dir = 'config'
         _config_filename = os.path.join(_config_dir, 'login.ini')
@@ -37,6 +39,8 @@ class RedditScraper:
         LOGIN
         '''
 
+        logger.info('Attempting PRAW login.')
+
         try:
             # Login with password flow
             self.reddit = praw.Reddit(
@@ -47,20 +51,20 @@ class RedditScraper:
                 username=self.config['login']['username']
             )
 
-            # Print username if login successful
             user_name = self.reddit.user.me()
-            print(user_name)
+            logger.info(f'Successfully logged in as {user_name}.')
 
         except KeyError as e:
             _error_message = 'Key error encountered while attempting to login. Ensure that your login file is \
             configured correctly and the program is running from root.'
-            print(f'{e}\n{_error_message}')
+            logger.error(f'{e}\n{_error_message}')
 
         except Exception as e:
             _error_message = 'Unexpected error occurred.'
-            print(f'{e}\n{_error_message}')
+            logger.error(f'{e}\n{_error_message}')
 
-    def unix_to_datetime(self, unix_time):
+    @staticmethod
+    def unix_to_datetime(unix_time):
 
         time_stamp = int(unix_time)
 
@@ -87,10 +91,12 @@ class RedditScraper:
 
         if submission_id and not submission_url:
 
+            logger.info(f'Extracting post data for submission id: {submission_id}.')
             _submission = self.reddit.submission(id=submission_id)
 
         elif submission_url and not submission_id:
 
+            logger.info(f'Extracting post data for submission url: {submission_url}.')
             _submission = self.reddit.submission(url=submission_url)
 
         elif submission_id and submission_url:
@@ -120,13 +126,15 @@ class RedditScraper:
                     'error': None
                 }
 
+                logger.info(f'Completed extracting post data.')
+
             except NotFound:
                 if submission_id:
                     _feedback = f'id: {submission_id}.'
                 elif submission_url:
                     _feedback = f'url: {submission_url}.'
                 _error_message = f'Received 404 HTTP response while trying to get submission using {_feedback}'
-                print(_error_message)
+                logger.error(_error_message)
 
         if _error_message:
             logger.error(_error_message)
@@ -139,7 +147,8 @@ class RedditScraper:
     def extract_post_comments_data(self, submission):
 
         comments_list = []
-        comments_dict = {}
+
+        logger.info(f'Extracting comment data for submission id: {submission.id}.')
 
         try:
             # Replace all
@@ -168,8 +177,10 @@ class RedditScraper:
                 "data": comments_list
             }
 
+            logger.info(f'Completed extracting comment data.')
+
         except Exception as e:
-            print(f'Encountered unexpected error: \n {e}')
+            logger.error(f'Encountered unexpected error: \n {e}')
             comments_dict = {
                 "error": "Unable to populate comments_dict. Check log files."
             }

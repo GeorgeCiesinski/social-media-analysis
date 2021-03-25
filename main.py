@@ -1,6 +1,9 @@
 from scrapers.RedditScraper import RedditScraper
 from sentiment_analysis import SentimentAnalysis
 from entities.util.database_manager import DatabaseManager
+from logs.Logger import base_logger
+
+logger = base_logger.getChild(__name__)
 
 
 def scrape_submission(submission_url):
@@ -72,10 +75,15 @@ reddit = RedditScraper()
 Read Job List
 '''
 
+logger.info('Reading job/job_list.txt.')
+
 # Read job_list.txt and scrape each url
 with open('job/job_list.txt', "r") as job_list:
 	urls = job_list.readlines()
 
+logger.info(f'Found {len(urls)} jobs.')
+
 for url in urls:
 
+	logger.info(f'Scraping url: {url}.')
 	scrape_submission(url)

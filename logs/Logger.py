@@ -3,7 +3,7 @@ INSTRUCTIONS
 
 1) To add logging to any module, add the following:
 
-    from logging.Logger import base_logger
+    from logs.Logger import base_logger
 
     logger = base_logger.getChild(__name__)
 

@@ -283,7 +283,7 @@ class DatabaseManager:
 			submission_dict['submission_deleted'] = True
 
 		except Exception as e:
-			# Todo: If an unexpected exception occurred, handle it
+			# If an unexpected exception occurred, handle it
 			logger.error('Unexpected exception occurred:')
 			logger.error(e)
 
