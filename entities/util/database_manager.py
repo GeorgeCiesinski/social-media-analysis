@@ -43,8 +43,9 @@ class DatabaseManager:
 			submission = self.session.query(Submission) \
 				.filter(Submission.id == submission_id) \
 				.one()
+			logger.info(f'Found submission {submission_id} in the database.')
 		except(NoResultFound, MultipleResultsFound) as e:
-			logger.warning('Could not find submission_id in the database.')
+			logger.warning(f'Could not find submission {submission_id} in the database.')
 			logger.warning(e)
 
 		return submission

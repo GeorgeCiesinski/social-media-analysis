@@ -179,6 +179,16 @@ class RedditScraper:
 
             logger.info(f'Completed extracting comment data.')
 
+        except TypeError as e:
+
+            logger.error('Failed to extract comments data due to TypeError.')
+            logger.error(e)
+
+        except AttributeError as e:
+
+            logger.error('Failed to extract comments data due to AttributeError.')
+            logger.error(e)
+
         except Exception as e:
             logger.error(f'Encountered unexpected error: \n {e}')
             comments_dict = {
