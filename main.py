@@ -45,7 +45,7 @@ def scrape_submission(submission_url):
 		text_file.write(str(comments_dict))
 
 	# Completion notice
-	print("Scrape Complete. See outputs.")
+	logger.info('Scrape Complete. See outputs.')
 
 	'''
 	Insert to Database
@@ -85,5 +85,5 @@ logger.info(f'Found {len(urls)} jobs.')
 
 for url in urls:
 
-	logger.info(f'Scraping url: {url}.')
+	logger.info(f'Scraping url: {url}')
 	scrape_submission(url)

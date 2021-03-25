@@ -36,6 +36,8 @@ class DatabaseManager:
 
 		submission = None
 
+		logger.info(f'Checking if submission {submission_id} exists in the database.')
+
 		# Check if the submission exists using id
 		try:
 			submission = self.session.query(Submission) \
@@ -59,9 +61,12 @@ class DatabaseManager:
 		:return Submission submission: An instance of the Submission object
 		"""
 
+		submission_id = submission_dict.get('id')
+		logger.info(f'Inserting {submission_id} into database.')
+
 		# Insert Submission Data
 
-		_new_submission = Submission(
+		new_submission = Submission(
 			id=submission_dict.get('id'),
 			title=submission_dict.get('title'),
 			selftext=submission_dict.get('selftext'),
@@ -69,17 +74,18 @@ class DatabaseManager:
 			created_utc=submission_dict.get('created_utc'),
 		)
 
-		self.session.add(_new_submission)
+		self.session.add(new_submission)
 
 		try:
 			self.session.commit()
+			logger.info('Successfully inserted into database.')
 		except IntegrityError as e:
 			# In case of integrity error, log error and return None
-			logger.error('Unable to insert Submission into database due to Integrity Error.')
+			logger.error(f'Unable to insert Submission {submission_id} into database due to Integrity Error.')
 			logger.error(e)
 			return None
 
-		return _new_submission
+		return new_submission
 
 	def insert_comments(self, comments_dict, submission):
 		"""
@@ -90,26 +96,30 @@ class DatabaseManager:
 		:param Submission submission: An instance of the Submission object
 		"""
 
+		logger.info(f'Inserting comments from submission {submission.id} into database.')
+
 		# Extract comment_data from comments_dict
-		_comment_data = comments_dict.get('data')
+		comment_data = comments_dict.get('data')
 
 		# Iterate through comment_data and add sentiment_result list
-		for _comment in _comment_data:
+		for comment in comment_data:
 
 			new_comment = Comment(
-				id=_comment.get('id'),
+				id=comment.get('id'),
 				submission_id=submission.id,
-				author=_comment.get('author'),
-				body=_comment.get('body'),
-				score=_comment.get('score'),
-				saved=_comment.get('saved'),
-				number_of_replies=_comment.get('number_of_replies'),
-				created_utc=_comment.get('created_utc'),
+				author=comment.get('author'),
+				body=comment.get('body'),
+				score=comment.get('score'),
+				saved=comment.get('saved'),
+				number_of_replies=comment.get('number_of_replies'),
+				created_utc=comment.get('created_utc'),
 			)
 
 			self.session.add(new_comment)
 
 		self.session.commit()
+
+		logger.info('Successfully inserted comments into database.')
 
 	def insert_sentiment(self, comments_dict):
 		"""
@@ -119,17 +129,19 @@ class DatabaseManager:
 		:param dict comments_dict: Dict containing a list of comment dicts
 		"""
 
+		logger.info('Inserting sentiment into database.')
+
 		# Extract comment_data from comments_dict
-		_comment_data = comments_dict.get('data')
+		comment_data = comments_dict.get('data')
 
 		# Iterate through comment_data and add sentiment_result list
-		for _comment in _comment_data:
+		for comment in comment_data:
 
 			# Extract sentiment dict from comment dict
-			_sentiment_dict = _comment.get('sentiment')
+			_sentiment_dict = comment.get('sentiment')
 
 			new_sentiment = Sentiment(
-				comment_id=_comment.get('id'),
+				comment_id=comment.get('id'),
 				polarity=_sentiment_dict.get('polarity'),
 				sentiment=_sentiment_dict.get('sentiment')
 			)
@@ -137,6 +149,8 @@ class DatabaseManager:
 			self.session.add(new_sentiment)
 
 		self.session.commit()
+
+		logger.info('Successfully inserted sentiment into database.')
 
 	'''
 	DATABASE EXTRACTION
@@ -151,10 +165,10 @@ class DatabaseManager:
 		:param dict submission_dict: Partial or complete submission_dict containing at least the id.
 		"""
 
-		# Todo: Make submission submission dict instead, maybe get rid of return?
-
 		# Get submission id
 		submission_id = submission_dict.get('id')
+
+		logger.info(f'Extracting submission {submission_id} from the database.')
 
 		try:
 			# Extract result from database
@@ -162,6 +176,8 @@ class DatabaseManager:
 				.filter(Submission.id == submission_id) \
 				.one()
 			submission_dict = result.asdict()
+
+			logger.info('Successfully extracted submission {submission_id} from the database.')
 
 		except (NoResultFound, MultipleResultsFound) as e:
 			_error_message = f'Unable to find submission {submission_id} in database.'
@@ -171,7 +187,7 @@ class DatabaseManager:
 				'error': _error_message
 			}
 
-		return submission_dict
+			logger.info('Failed to extract submission {submission_id} from the database.')
 
 	def extract_comments(self, submission_dict):
 		"""
@@ -185,6 +201,8 @@ class DatabaseManager:
 		# Get submission id
 		submission_id = submission_dict.get('id')
 
+		logger.info(f'Extracting comments from submission {submission_id} from the database.')
+
 		# Extract result from database
 		result = self.session.query(Comment) \
 			.filter(Comment.submission_id == submission_id) \
@@ -197,6 +215,8 @@ class DatabaseManager:
 				for item in result
 			]
 		}
+
+		logger.info('Successfully extracted comments from submission {submission_id} from the database.')
 
 		return comments_dict
 
@@ -224,6 +244,8 @@ class DatabaseManager:
 		# Get submission id
 		submission_id = submission_dict.get('id')
 
+		logger.info(f'Extracting comments and sentiment for submission {submission_id} from the database.')
+
 		result = self.session.query(Comment).options(
 			joinedload(Comment.sentiment)
 		).all()
@@ -248,6 +270,8 @@ class DatabaseManager:
 			]
 		}
 
+		logger.info('Successfully extracted comments and sentiment for submission {submission_id} from the database.')
+
 		return comments_dict
 
 	'''
@@ -263,6 +287,8 @@ class DatabaseManager:
 		"""
 
 		submission_id = submission_dict.get('id')
+
+		logger.info(f'Deleting submission, comments, and sentiment for submission {submission_id} from the database.')
 
 		submission = None
 
@@ -282,9 +308,13 @@ class DatabaseManager:
 
 			submission_dict['submission_deleted'] = True
 
+			logger.info(f'Successfully deleted data for submission {submission_id} from the database.')
+
 		except Exception as e:
 			# If an unexpected exception occurred, handle it
 			logger.error('Unexpected exception occurred:')
 			logger.error(e)
 
 			submission_dict['submission_deleted'] = False
+
+			logger.info(f'Failed to delete data for submission {submission_id} from the database.')

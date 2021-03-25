@@ -91,12 +91,12 @@ class RedditScraper:
 
         if submission_id and not submission_url:
 
-            logger.info(f'Extracting post data for submission id: {submission_id}.')
+            logger.info(f'Extracting post data for submission id: {submission_id}')
             _submission = self.reddit.submission(id=submission_id)
 
         elif submission_url and not submission_id:
 
-            logger.info(f'Extracting post data for submission url: {submission_url}.')
+            logger.info(f'Extracting post data for submission url: {submission_url}')
             _submission = self.reddit.submission(url=submission_url)
 
         elif submission_id and submission_url:
