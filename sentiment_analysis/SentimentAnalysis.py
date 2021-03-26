@@ -20,7 +20,7 @@ def list_parser(comments_dict):
 
 def sentiment_analysis(body):
 
-    # TextBlobsentiment analysis
+    # TextBlob Sentiment analysis
     analysis = TextBlob(body)
 
     if analysis.polarity > 0:

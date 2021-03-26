@@ -86,43 +86,44 @@ class RedditScraper:
         Get submission object
         '''
 
-        _error_message = None
-        _submission = None
+        error_message = None
+        submission = None
+        submission_dict = {}
 
         if submission_id and not submission_url:
 
             logger.info(f'Extracting post data for submission id: {submission_id}')
-            _submission = self.reddit.submission(id=submission_id)
+            submission = self.reddit.submission(id=submission_id)
 
         elif submission_url and not submission_id:
 
             logger.info(f'Extracting post data for submission url: {submission_url}')
-            _submission = self.reddit.submission(url=submission_url)
+            submission = self.reddit.submission(url=submission_url)
 
         elif submission_id and submission_url:
 
-            _error_message = 'Please provide either a submission id or a submission url, not both.'
+            error_message = 'Please provide either a submission id or a submission url, not both.'
 
         '''
         Populate submission_dict
         '''
 
-        if _submission:
+        if submission:
 
             try:
-                # Create submission dict using values from _submission object
+                # Create submission dict using values from submission object
                 submission_dict = {
-                    'submission_object': _submission,
-                    'title': _submission.title,
-                    'selftext': _submission.selftext,
-                    'subreddit': _submission.subreddit,
-                    'author': _submission.author,
-                    'score': _submission.score,
-                    'upvote_ratio': _submission.upvote_ratio,
-                    'locked': _submission.locked,
-                    'id': _submission.id,
-                    'url': _submission.url,
-                    'created_utc': self.unix_to_datetime(_submission.created_utc),
+                    'submission_object': submission,
+                    'title': submission.title,
+                    'selftext': submission.selftext,
+                    'subreddit': submission.subreddit,
+                    'author': submission.author,
+                    'score': submission.score,
+                    'upvote_ratio': submission.upvote_ratio,
+                    'locked': submission.locked,
+                    'id': submission.id,
+                    'url': submission.url,
+                    'created_utc': self.unix_to_datetime(submission.created_utc),
                     'error': None
                 }
 
@@ -130,23 +131,31 @@ class RedditScraper:
 
             except NotFound:
                 if submission_id:
-                    _feedback = f'id: {submission_id}.'
+                    feedback = f'id: {submission_id}.'
                 elif submission_url:
-                    _feedback = f'url: {submission_url}.'
-                _error_message = f'Received 404 HTTP response while trying to get submission using {_feedback}'
-                logger.error(_error_message)
+                    feedback = f'url: {submission_url}.'
+                error_message = f'Received 404 HTTP response while trying to get submission using {feedback}'
+                logger.error(error_message)
 
-        if _error_message:
-            logger.error(_error_message)
+        if error_message:
+            logger.error(error_message)
             submission_dict = {
-                'error': _error_message
+                'error': error_message
             }
 
         return submission_dict
 
     def extract_post_comments_data(self, submission):
+        """
+        Receives a submission object, and extracts all of the root level comments. Creates a dict for each comment
+        and appends it to a list, which is then inserted into comments_dict and returned.
+
+        :param Submission submission: PRAW Submission object
+        :return dict comments_dict: Dict containing data, which is a list of dicts
+        """
 
         comments_list = []
+        comments_dict = {}
 
         logger.info(f'Extracting comment data for submission id: {submission.id}.')
 
@@ -159,11 +168,12 @@ class RedditScraper:
                 # Replace all replies
                 top_level_comment.replies.replace_more(limit=None)
 
+                # Todo: Fix using debugger | __len__
                 number_of_replies = len(top_level_comment.replies)
 
                 comment = {
                     'id': top_level_comment.id,
-                    'author': top_level_comment.author.name,
+                    'author': top_level_comment.author.name if top_level_comment.author is not None else '[deleted]',
                     'body': top_level_comment.body,
                     'score': top_level_comment.score,
                     'saved': top_level_comment.saved,

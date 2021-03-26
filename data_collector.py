@@ -26,6 +26,14 @@ def scrape_submission(submission_url):
 	comments_dict = reddit.extract_post_comments_data(submission_object)
 
 	'''
+	Exit if no comments were extracted from the submission
+	'''
+
+	if not len(comments_dict.get('data')) > 0:
+		logger.info('Data extraction yielded zero comments. Aborting sentiment analysis and database insertion.')
+		return
+
+	'''
 	Analyze Sentiment
 	'''
 
