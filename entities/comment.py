@@ -18,6 +18,5 @@ class Comment(Base):
 	created_utc = Column(DateTime)
 
 	# Relationships
-	submission = relationship('Submission', uselist=False)  # Many to one relationship
-	sentiment = relationship('Sentiment', uselist=False)  # Can be used to find comment.sentiment
-
+	# Can be used to find comment.sentiment
+	sentiment = relationship('Sentiment', cascade='all, delete', backref='comment')

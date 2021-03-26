@@ -1,6 +1,5 @@
 from entities.base import Base
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, ForeignKey, Float
 
 
 class Sentiment(Base):
@@ -11,7 +10,3 @@ class Sentiment(Base):
 	comment_id = Column(String, ForeignKey('comment.id'))
 	polarity = Column(Float)
 	sentiment = Column(String)
-
-	# Relationship
-	comment = relationship('Comment', uselist=False)
-

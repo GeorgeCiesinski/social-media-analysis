@@ -6,6 +6,8 @@ def list_parser(comments_dict):
     # Extract comment_data from comments_dict
     comment_data = comments_dict.get('data')
 
+    # Todo: Add logging. Check if comment_data is empty before proceeding or this fails
+
     # Iterate through comment_data and add sentiment_result list
     for comment in comment_data:
         body = comment.get('body')
@@ -18,7 +20,7 @@ def list_parser(comments_dict):
 
 def sentiment_analysis(body):
 
-    # TextBlobsentiment analysis
+    # TextBlob Sentiment analysis
     analysis = TextBlob(body)
 
     if analysis.polarity > 0:
