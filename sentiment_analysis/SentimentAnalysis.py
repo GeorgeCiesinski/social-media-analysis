@@ -1,8 +1,18 @@
+"""
+Author: Saif Gorges
+Date: March 15 2021
+"""
+
 from textblob import TextBlob
 
 
 def list_parser(comments_dict):
+    """
+    Parses through comments dictionary and appends sentiment analysis.
 
+    :param dict comments_dict: Dict containing comments information.
+    :return dict comments_dict: Returned dict containing sentiment analysis.
+    """
     # Extract comment_data from comments_dict
     comment_data = comments_dict.get('data')
 
@@ -19,8 +29,14 @@ def list_parser(comments_dict):
 
 
 def sentiment_analysis(body):
+    """
+    Performs sentiment analysis on text and returns list with value and description of sentiment.
 
-    # TextBlob Sentiment analysis
+    :param string body: String containing comment data.
+    :return list result: Returned list containing value and description of sentiment.
+    """
+    # TextBlobsentiment analysis
+
     analysis = TextBlob(body)
 
     if analysis.polarity > 0:
