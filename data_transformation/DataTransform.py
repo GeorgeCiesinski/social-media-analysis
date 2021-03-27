@@ -3,6 +3,7 @@ Author: Saif Gorges
 Date: March 11 2021
 """
 
+
 # Import dependencies
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -10,6 +11,10 @@ import json
 from pandas import json_normalize
 from pprint import pprint
 
+
+##########################
+#   Comments Analysis    #
+##########################
 comment_dict = {'data': [{'id': 'grl2104', 'author': 'RedPandaBearCat',
                           'body': '>\\>> easily get Jobs and Internships after 2 months of learning\n\nWell, it could work if such person has appropriate background in similar/related field and/or specific talent, e.g. being applied mathematician and re-training for a junior role in data science.\n\nOr being front-end developer (JavaScript / React) and re-training for a junior role in back-end  (Node.js / Express) with the same language (JavaScript) within the same organization.\n\nEven then, 2 months? That seems to be too short. Or it may be an exaggeration. Or maybe the aforementioned person is extremely talented.',
                           'score': 25, 'saved': False, 'number_of_replies': 1, 'created_utc': '2021-03-20 12:49:21',
@@ -95,9 +100,9 @@ sentiment_stats['Sentiment Range'] = sentiment_stats['Sentiment Range'].astype(s
 # Rename DataFrame
 sentiment_stats = sentiment_stats.rename(
     columns={"id_count": "Total Count", "score_sum": "Total Upvotes", "replies_count": "Total Replies"})
-sentiment_stats
 
-# Creating axes object and defining plot
+
+# Creating axes object and defining plot for "Overall Sentiment & Upvotes
 ax = sentiment_stats.plot(kind='bar', x='Sentiment Range',
                           y='Total Count', color='Blue',
                           linewidth=3, rot=90)
