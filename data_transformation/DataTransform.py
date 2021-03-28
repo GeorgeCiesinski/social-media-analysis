@@ -3,13 +3,11 @@ Author: Saif Gorges
 Date: March 11 2021
 """
 
-
 # Import dependencies
 import pandas as pd
 import matplotlib.pyplot as plt
-import json
-from pandas import json_normalize
 from pprint import pprint
+
 
 class DataTransform:
 
@@ -96,7 +94,7 @@ class DataTransform:
         plt.tight_layout()
 
         # Show plot
-        plt.savefig("Graphs/overall_sentiment_and_upvotes.png")
+        plt.savefig("data_transformation/Graphs/overall_sentiment_and_upvotes.png")
         plt.show()
 
     def overall_sentiment_replies(self, comments_dict):
@@ -123,7 +121,7 @@ class DataTransform:
         plt.tight_layout()
 
         # Show plot
-        plt.savefig("Graphs/overall_sentiment_and_replies.png")
+        plt.savefig("data_transformation/Graphs/overall_sentiment_and_replies.png")
         plt.show()
 
     def sentiment_pie(self, comments_dict):
@@ -131,7 +129,7 @@ class DataTransform:
         # Create scatterplot for timeline vs sentiment
 
         ax1 = comment_df.plot.scatter(x='Date', y='Sentiment Polarity', c='Upvotes', colormap="viridis", rot=90)
-        plt.savefig("Graphs/sentiment_timeline.png")
+        plt.savefig("data_transformation/Graphs/sentiment_timeline.png")
 
         # Create DataFrame for sentiment description
 
@@ -149,7 +147,7 @@ class DataTransform:
             total_count=('ID', 'count')
         )
         sentiment_pie = sentiment_description_df.plot.pie(y='total_count', figsize=(5, 5))
-        plt.savefig("Graphs/sentiment_pie.png")
+        plt.savefig("data_transformation/Graphs/sentiment_pie.png")
 
 if __name__ == '__main__':
     comment_dict = {'data': [{'id': 'grl2104', 'author': 'RedPandaBearCat',
