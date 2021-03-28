@@ -103,7 +103,7 @@ class DataTransform:
         comment_df, sentiment_stats = self.create_df(comments_dict)
         # Creating axes object and defining plot
         ax = sentiment_stats.plot(kind='bar', x='Sentiment Range',
-                                  y='Total Replies', color='Blue',
+                                  y='Total Count', color='Blue',
                                   linewidth=3, rot=90)
 
         ax2 = sentiment_stats.plot(kind='line', x='Sentiment Range',
@@ -126,7 +126,7 @@ class DataTransform:
         plt.savefig("Graphs/overall_sentiment_and_replies.png")
         plt.show()
 
-    def sentiment_pie(self, comments_dict):
+    def sentiment_timeline(self, comments_dict):
         comment_df, sentiment_stats = self.create_df(comments_dict)
         # Create scatterplot for timeline vs sentiment
 
@@ -134,21 +134,18 @@ class DataTransform:
         plt.savefig("Graphs/sentiment_timeline.png")
 
         # Create DataFrame for sentiment description
-
-        sentiment_description_df = comment_df.groupby("Sentiment Description").agg(
-            total_count=('ID', 'count')
-        )
-        # sentiment_description_df = sentiment_description_df.rename(columns={"total_count": "Sentiment"})
-        sentiment_description_df
-
-        # Create pie graph for sentiment distribution
-
-    def sentiment_timeline(self, comments_dict):
+    def sentiment_pie(self, comments_dict):
         comment_df, sentiment_stats = self.create_df(comments_dict)
         sentiment_description_df = comment_df.groupby("Sentiment Description").agg(
             total_count=('ID', 'count')
         )
-        sentiment_pie = sentiment_description_df.plot.pie(y='total_count', figsize=(5, 5))
+
+        # Create pie graph for sentiment distribution
+        comment_df, sentiment_stats = self.create_df(comments_dict)
+        sentiment_description_df = comment_df.groupby("Sentiment Description").agg(
+            total_count=('ID', 'count')
+        )
+        sentiment_pie = sentiment_description_df.plot.pie(y='total_count', figsize=(5, 5), shadow = True, autopct='%1.1f%%')
         plt.savefig("Graphs/sentiment_pie.png")
 
 if __name__ == '__main__':
@@ -186,3 +183,8 @@ if __name__ == '__main__':
     pprint(comment_dict)
 
     df = DataTransform()
+
+    #df.overall_sentiment_upvotes(comment_dict)
+    #df.overall_sentiment_replies(comment_dict)
+    #df.sentiment_timeline(comment_dict)
+    #df.sentiment_pie(comment_dict)
