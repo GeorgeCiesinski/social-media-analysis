@@ -1,15 +1,14 @@
-atomicwrites==1.4.0
 attrs==20.3.0
 certifi==2020.12.5
 chardet==4.0.0
 click==7.1.2
-colorama==0.4.4
 cycler==0.10.0
+dictalchemy==0.1.2.7
 idna==2.10
 iniconfig==1.1.1
 joblib==1.0.0
 kiwisolver==1.3.1
-matplotlib==3.3.4
+matplotlib==3.4.0
 nltk==3.5
 numpy==1.19.5
 packaging==20.9
@@ -19,7 +18,6 @@ pluggy==0.13.1
 praw==7.2.0
 prawcore==2.0.0
 psycopg2==2.8.6
-psycopg2-binary==2.8.6
 py==1.10.0
 pyparsing==2.4.7
 pytest==6.2.2

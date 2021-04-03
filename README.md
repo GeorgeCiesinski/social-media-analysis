@@ -1,12 +1,29 @@
 # social-media-analysis
 
-social-media-analysis is an educational project being built by a few interested team members to better their understanding of: 
+Social-media-analysis is a project created by Saif Gorges and George Ciesinski which
+analyzes Reddit submissions and comments to analyze the overall sentiment of the
+responses to the submission. This project was intended as a learning device for the
+two of us to improve our programming knowledge in a few different areas, such as
+sentiment analysis, PostgreSQL and SQLAlchemy, data scraping, and collaboration. 
 
-* sentiment analysis
-* web scraping
-* database
-* collaborative processes
+## Table of Contents
 
-social-media-analysis will collect data by scraping posts on social media platforms such as Twitter and Reddit. It will analyze these posts, and the comments, and will store the data in a database for later analysis. We are exploring the kinds of data we can extract, and what we can extrapolate from this data. 
+* [Overview](#Overview)
+* 
+* 
+* 
+* [Contributors](#Contributors)
 
-Not all of us are trained in Data Science, so this will be an explorative look at this field. We will probably do many things wrong, but this will help us learn from our mistakes and do it correctly next time. 
+## Overview
+
+Social-Media-Analysis is composed of two parts. The first part is a Reddit bot made using
+the Reddit API [PRAW](https://pypi.org/project/praw/). The bot scrapes submission and comment data from a list of submission
+URLs and populates a [PostgreSQL](https://www.postgresql.org) database with this information using 
+[SQLAlchemy](https://www.sqlalchemy.org). 
+
+The second part is a data plotter which utilizes Matplotlib...
+
+## Contributors
+
+* [George Ciesinski](https://github.com/GeorgeCiesinski)
+* [Saif Gorges](https://github.com/saif-gorges)

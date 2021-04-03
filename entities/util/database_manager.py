@@ -24,6 +24,10 @@ class DatabaseManager:
 	def __del__(self):
 		self.session.close()
 
+	'''
+	INFORMATION
+	'''
+
 	def check_submission_exists(self, submission_dict):
 		"""
 		Checks if a submission id already exists in database, and returns True or False.
@@ -49,6 +53,23 @@ class DatabaseManager:
 			logger.warning(e)
 
 		return submission
+
+	def get_submission_ids(self):
+		"""
+		Queries the database for submissions, and creates a list of submission_id's.
+
+		:return list submission_id_list: List of submission id's in the database
+		"""
+
+		logger.info('Getting list of submissions from database.')
+
+		submission_list = self.session.query(Submission) \
+			.all()
+
+		# Creates list of Submission.id's for each submission item in submission_list
+		submission_id_list = [submission_item.id for submission_item in submission_list]
+
+		return submission_id_list
 
 	'''
 	DATABASE INSERTION
