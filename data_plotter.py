@@ -23,7 +23,9 @@ def plot_all_graphs(database_manager, data_transform, submission_id):
 	database_manager.extract_submission(submission_dict)
 
 	# Extract comments_dict with comments and sentiment for submission
-	comments_dict = DatabaseManager.extract_comments_sentiment(submission_dict)
+	comments_dict = database_manager.extract_comments_sentiment(submission_dict)
+
+	# Todo: Create df separately, then call data_transform methods
 
 	# Plot Graphs
 	data_transform.overall_sentiment_replies(comments_dict)
