@@ -83,13 +83,13 @@ reddit = RedditScraper()
 Read Job List
 '''
 
-job_list_directory = 'scrape_job_list.txt'
+job_list_directory = 'job/scrape_job_list.txt'
 
 logger.info(f'Reading job/{job_list_directory}.')
 
 # Read scrape_job_list.txt and scrape each url
 with open(job_list_directory, "r") as scrape_job_list:
-	urls = scrape_job_list.readlines()
+	urls = scrape_job_list.read().splitlines()
 
 logger.info(f'Found {len(urls)} jobs.')
 

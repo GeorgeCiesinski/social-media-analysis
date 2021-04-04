@@ -98,7 +98,9 @@ class DataTransform:
         plt.show()
 
     def overall_sentiment_replies(self, comments_dict):
+
         comment_df, sentiment_stats = self.create_df(comments_dict)
+
         # Creating axes object and defining plot
         ax = sentiment_stats.plot(kind='bar', x='Sentiment Range',
                                   y='Total Count', color='Blue',
@@ -125,14 +127,15 @@ class DataTransform:
         plt.show()
 
     def sentiment_timeline(self, comments_dict):
-        comment_df, sentiment_stats = self.create_df(comments_dict)
-        # Create scatterplot for timeline vs sentiment
 
+        comment_df, sentiment_stats = self.create_df(comments_dict)
+
+        # Create scatterplot for timeline vs sentiment
         ax1 = comment_df.plot.scatter(x='Date', y='Sentiment Polarity', c='Upvotes', colormap="viridis", rot=90)
         plt.savefig("data_transformation/Graphs/sentiment_timeline.png")
 
-        # Create DataFrame for sentiment description
     def sentiment_pie(self, comments_dict):
+
         comment_df, sentiment_stats = self.create_df(comments_dict)
         sentiment_description_df = comment_df.groupby("Sentiment Description").agg(
             total_count=('ID', 'count')
