@@ -25,13 +25,14 @@ def plot_all_graphs(database_manager, data_transform, submission_id):
 	# Extract comments_dict with comments and sentiment for submission
 	comments_dict = database_manager.extract_comments_sentiment(submission_dict)
 
-	# Todo: Create df separately, then call data_transform methods
+	# Create Dataframes
+	comment_df, sentiment_stats = data_transform.create_df(submission_id, comments_dict)
 
-	# Plot Graphs
-	data_transform.overall_sentiment_replies(comments_dict)
-	data_transform.overall_sentiment_upvotes(comments_dict)
-	data_transform.sentiment_pie(comments_dict)
-	data_transform.sentiment_timeline(comments_dict)
+	# Plot all Graphs
+	data_transform.overall_sentiment_replies(submission_id, sentiment_stats)
+	data_transform.overall_sentiment_upvotes(submission_id, sentiment_stats)
+	data_transform.sentiment_timeline(submission_id, comment_df)
+	data_transform.sentiment_pie(submission_id, comment_df)
 
 
 '''

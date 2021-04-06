@@ -6,12 +6,23 @@ Date: March 11 2021
 # Import dependencies
 import pandas as pd
 import matplotlib.pyplot as plt
+from pathlib import Path
+
+from logs.Logger import base_logger
+
+logger = base_logger.getChild(__name__)
 
 
 class DataTransform:
 
     @staticmethod
-    def create_df(comments_dict):
+    def create_directory(submission_id):
+
+        Path(f"data_transformation/Graphs/{submission_id}").mkdir(parents=True, exist_ok=True)
+
+    def create_df(self, submission_id, comments_dict):
+
+        logger.info(f'Generating dataframes for submission: {submission_id}.')
 
         # Create empty lists
         author = []
@@ -24,17 +35,26 @@ class DataTransform:
         sentiment_polarity = []
         sentiment_description = []
 
+        # Extract list of comments from comments_dict
+        list_of_comments = comments_dict.get('data')
+
+        # Exit function if list_of_comments is empty
+        if list_of_comments is None:
+            logger.error('Unable to find comments in comment dict. Aborting data frame creation.')
+            return None, None
+
         # Parse through json file and append lists
-        for x in range(len(comments_dict['data'])):
-            author.append(comments_dict['data'][x]['author'])
-            body.append(comments_dict['data'][x]["body"])
-            created_utc.append(comments_dict['data'][x]["created_utc"])
-            id.append(comments_dict['data'][x]['id'])
-            number_of_replies.append(comments_dict['data'][x]["number_of_replies"])
-            saved.append(comments_dict['data'][x]['saved'])
-            score.append(comments_dict['data'][x]["score"])
-            sentiment_polarity.append(comments_dict['data'][x]["sentiment"]["polarity"])
-            sentiment_description.append(comments_dict['data'][x]["sentiment"]["sentiment"])
+        for comment in list_of_comments:
+            print(comment)
+            author.append(comment['author'])
+            body.append(comment['body'])
+            created_utc.append(comment['created_utc'])
+            id.append(comment['id'])
+            number_of_replies.append(comment['number_of_replies'])
+            saved.append(comment['saved'])
+            score.append(comment['score'])
+            sentiment_polarity.append(comment['sentiment']['polarity'])
+            sentiment_description.append(comment['sentiment']['sentiment'])
 
         # Create and clean dataframe
         comment_df = pd.DataFrame(
@@ -67,11 +87,15 @@ class DataTransform:
         sentiment_stats = sentiment_stats.rename(
             columns={"id_count": "Total Count", "score_sum": "Total Upvotes", "replies_count": "Total Replies"})
 
+        logger.info('Successfully generated dataframes.')
+
+        self.create_directory(submission_id)
+
         return comment_df, sentiment_stats
 
-    def overall_sentiment_upvotes(self, comments_dict):
+    @staticmethod
+    def overall_sentiment_upvotes(submission_id, sentiment_stats):
 
-        comment_df, sentiment_stats = self.create_df(comments_dict)
         # Creating axes object and defining plot for "Overall Sentiment & Upvotes
         ax = sentiment_stats.plot(kind='bar', x='Sentiment Range',
                                   y='Total Count', color='Blue',
@@ -93,13 +117,11 @@ class DataTransform:
         # Defining display layout
         plt.tight_layout()
 
-        # Show plot
-        plt.savefig("data_transformation/Graphs/overall_sentiment_and_upvotes.png")
-        plt.show()
+        # Save Plot
+        plt.savefig(f"data_transformation/Graphs/{submission_id}/overall_sentiment_and_upvotes.png")
 
-    def overall_sentiment_replies(self, comments_dict):
-
-        comment_df, sentiment_stats = self.create_df(comments_dict)
+    @staticmethod
+    def overall_sentiment_replies(submission_id, sentiment_stats):
 
         # Creating axes object and defining plot
         ax = sentiment_stats.plot(kind='bar', x='Sentiment Range',
@@ -122,31 +144,28 @@ class DataTransform:
         # Defining display layout
         plt.tight_layout()
 
-        # Show plot
-        plt.savefig("data_transformation/Graphs/overall_sentiment_and_replies.png")
-        plt.show()
+        # Save Plot
+        plt.savefig(f"data_transformation/Graphs/{submission_id}/overall_sentiment_and_replies.png")
 
-    def sentiment_timeline(self, comments_dict):
-
-        comment_df, sentiment_stats = self.create_df(comments_dict)
+    @staticmethod
+    def sentiment_timeline(submission_id, comment_df):
 
         # Create scatterplot for timeline vs sentiment
         ax1 = comment_df.plot.scatter(x='Date', y='Sentiment Polarity', c='Upvotes', colormap="viridis", rot=90)
-        plt.savefig("data_transformation/Graphs/sentiment_timeline.png")
 
-    def sentiment_pie(self, comments_dict):
+        # Save Plot
+        plt.savefig(f"data_transformation/Graphs/{submission_id}/sentiment_timeline.png")
 
-        comment_df, sentiment_stats = self.create_df(comments_dict)
-        sentiment_description_df = comment_df.groupby("Sentiment Description").agg(
-            total_count=('ID', 'count')
-        )
+    @staticmethod
+    def sentiment_pie(submission_id, comment_df):
 
         # Create pie graph for sentiment distribution
-        comment_df, sentiment_stats = self.create_df(comments_dict)
         sentiment_description_df = comment_df.groupby("Sentiment Description").agg(
             total_count=('ID', 'count')
         )
 
         sentiment_pie = sentiment_description_df.plot.pie(y='total_count', figsize=(5, 5), shadow=True,
                                                           autopct='%1.1f%%')
-        plt.savefig("Graphs/sentiment_pie.png")
+
+        # Save Plot
+        plt.savefig(f"data_transformation/Graphs/{submission_id}/sentiment_pie.png")

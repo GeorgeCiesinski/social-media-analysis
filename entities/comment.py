@@ -19,4 +19,4 @@ class Comment(Base):
 
 	# Relationships
 	# Can be used to find comment.sentiment
-	sentiment = relationship('Sentiment', cascade='all, delete', backref='comment')
+	sentiment = relationship('Sentiment', cascade='all, delete', backref='comment', uselist=False)
