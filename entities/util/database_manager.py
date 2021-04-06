@@ -199,7 +199,7 @@ class DatabaseManager:
 				.one()
 			submission_dict = result.asdict()
 
-			logger.info('Successfully extracted submission {submission_id} from the database.')
+			logger.info(f'Successfully extracted submission {submission_id} from the database.')
 
 		except (NoResultFound, MultipleResultsFound) as e:
 			_error_message = f'Unable to find submission {submission_id} in database.'
@@ -208,8 +208,6 @@ class DatabaseManager:
 			submission_dict = {
 				'error': _error_message
 			}
-
-			logger.info('Failed to extract submission {submission_id} from the database.')
 
 	def extract_comments(self, submission_dict):
 		"""
@@ -238,7 +236,7 @@ class DatabaseManager:
 			]
 		}
 
-		logger.info('Successfully extracted comments from submission {submission_id} from the database.')
+		logger.info(f'Successfully extracted comments from submission {submission_id} from the database.')
 
 		return comments_dict
 
@@ -292,7 +290,7 @@ class DatabaseManager:
 			]
 		}
 
-		logger.info('Successfully extracted comments and sentiment for submission {submission_id} from the database.')
+		logger.info(f'Successfully extracted comments and sentiment for submission {submission_id} from the database.')
 
 		return comments_dict
 

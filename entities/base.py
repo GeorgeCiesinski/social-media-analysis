@@ -12,7 +12,7 @@ engine = None
 try:
 	with open(connection_path, "r") as text_file:
 		connection_string = text_file.read()
-		engine = create_engine(connection_string, echo=True)
+		engine = create_engine(connection_string, echo=False)
 except FileNotFoundError:
 	logging.error(f"The {connection_path} file is missing.")
 except sqla_exc.ArgumentError:
