@@ -35,8 +35,50 @@ def plot_all_graphs(database_manager, data_transform, submission_id):
 	data_transform.sentiment_pie(submission_id, comment_df)
 
 
+def execute_job_list():
+
+	# Instantiating empty lists for failed jobs
+	new_sub_ids = []
+
+	logger.info(f'Reading job/{plot_list_directory}.')
+
+	# Read file and extract submission ids
+	with open(plot_list_directory, "r") as plot_job_list:
+		submission_ids = plot_job_list.read().splitlines()
+
+	logger.info(f'Found {len(submission_ids)} jobs.')
+
+	# For each Submission.id in submission_ids
+	for submission in submission_ids:
+
+		logger.info(f'Plotting submission: {submission}')
+
+		try:
+			# Plot all graphs
+			plot_all_graphs(dm, dt, submission)
+			logger.info('Removing submission from job list.')
+		except Exception as e:
+			logger.error('Unexpected error occurred. Aborted plotting submission.')
+			logger.error(e)
+			new_sub_ids.append(submission)
+
+	return new_sub_ids
+
+
+def update_job_list():
+
+	with open(plot_list_directory, 'w') as plot_job_list:
+
+		if len(new_sub_ids) != 0:
+			for sub_id in new_sub_ids:
+				plot_job_list.write(f"{sub_id}\n")
+			logger.warning('Some submissions were not plotted successfully. Updated job list.')
+		else:
+			logger.info('Successfully plotted all submissions. Clearing job list.')
+
+
 '''
-INSTANTIATE CLASSES
+INSTANTIATE CLASSES AND VARIABLES
 '''
 
 # Database Manager used to interface with database
@@ -45,22 +87,16 @@ dm = DatabaseManager()
 # Data Transform used to plot graphs
 dt = DataTransform()
 
+# Set job list files
+plot_list_directory = 'job/plot_job_list.txt'
+
 '''
 Read Job List
 '''
 
-job_list_directory = 'job/plot_job_list.txt'
+# Executes items in job list
+new_sub_ids = execute_job_list()
 
-logger.info(f'Reading job/{job_list_directory}.')
+update_job_list()
 
-# Read file and extract submission ids
-with open(job_list_directory, "r") as plot_job_list:
-	submission_ids = plot_job_list.read().splitlines()
-
-logger.info(f'Found {len(submission_ids)} jobs.')
-
-# For each Submission.id in submission_ids
-for submission in submission_ids:
-	# Plot all graphs
-	logger.info(f'Plotting submission: {submission}')
-	plot_all_graphs(dm, dt, submission)
+logger.info('Killing data_plotter.py.')

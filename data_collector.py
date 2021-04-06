@@ -78,6 +78,60 @@ def scrape_submission(submission_url):
 	# Returns submission_id
 	return submission_dict.get('id')
 
+
+def execute_job_list():
+
+	# Instantiating empty lists for failed jobs
+	new_urls = []
+	completed_submission_ids = []
+
+	logger.info(f'Reading job/{scrape_list_directory}.')
+
+	# Read scrape_job_list.txt and scrape each url
+	with open(scrape_list_directory, "r") as scrape_job_list:
+		urls = scrape_job_list.read().splitlines()
+
+	logger.info(f'Found {len(urls)} jobs.')
+
+	# Iterate through list of submissions and scrape each one
+	for url in urls:
+
+		logger.info(f'Scraping url: {url}')
+
+		try:
+			submission_id = scrape_submission(url)  # Scrape the submission, return submission id
+			completed_submission_ids.append(submission_id)  # Update completed_submission_ids with submission_id
+			logger.info('Removing url from job list.')
+		except Exception as e:
+			logger.error('Unexpected error occurred. Aborted scraping url.')
+			logger.error(e)
+			# Append url to new_urls
+			new_urls.append(url)
+
+	return new_urls, completed_submission_ids
+
+
+def update_job_lists(new_urls, completed_submission_ids):
+
+	with open(scrape_list_directory, 'w') as scrape_job_list:
+
+		if len(new_urls) != 0:
+			logger.warning('Some jobs failed. Updating job list with remaining urls.')
+			for url in new_urls:
+				scrape_job_list.write(f"{url}\n")
+		else:
+			logger.info('No jobs remaining.')
+
+	with open(plot_list_directory, 'w') as plot_job_list:
+
+		if len(completed_submission_ids) != 0:
+			for sub_id in completed_submission_ids:
+				plot_job_list.write(f"{sub_id}\n")
+			logger.info('Successfully updated plot job list with submission ids.')
+		else:
+			logger.warning('Failure: Zero submissions were scraped successfully.')
+
+
 # Login to Praw
 reddit = RedditScraper()
 
@@ -85,40 +139,14 @@ reddit = RedditScraper()
 Read Job List
 '''
 
-# Set job list file
-job_list_directory = 'job/scrape_job_list.txt'
+# Set job list files
+scrape_list_directory = 'job/scrape_job_list.txt'
+plot_list_directory = 'job/plot_job_list.txt'
 
-# Instantiating empty list for failed jobs
-new_urls = []
+# Executes items in job list
+new_urls, completed_submission_ids = execute_job_list()
 
-logger.info(f'Reading job/{job_list_directory}.')
+# Removes scraped urls from job list and updates plot job list with new submissions
+update_job_lists(new_urls, completed_submission_ids)
 
-# Read scrape_job_list.txt and scrape each url
-with open(job_list_directory, "r") as scrape_job_list:
-	urls = scrape_job_list.read().splitlines()
-
-logger.info(f'Found {len(urls)} jobs.')
-
-for url in urls:
-
-	logger.info(f'Scraping url: {url}')
-
-	try:
-		submission_id = scrape_submission(url)
-	except Exception as e:
-		logger.error('Unexpected error occurred. Aborted scraping url.')
-		logger.error(e)
-		# Append url to new_urls
-		new_urls.append(url)
-
-	logger.info(f'Removing url from job list.')
-
-with open(job_list_directory, 'w') as scrape_job_list:
-
-	if len(new_urls) != 0:
-		logger.warning('Some jobs failed. Updating job list with remaining urls.')
-		for url in new_urls:
-			scrape_job_list.write(f"{url}\n")
-	else:
-		logger.info('No jobs remaining. Killing data_collector.')
-
+logger.info('Killing data_collector.py.')
