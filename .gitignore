@@ -1,9 +1,11 @@
-/venv/
 .idea
-/config/login.ini
-__pycache__/
-config/connection_string.txt
 .DS_Store
+/venv/
+/config/connection_string.txt
+/config/login.ini
 /output/comments_dict.txt
 /output/submission_dict.txt
 /logs/*
+/output/graphs/*
+!/output/graphs/graphs-readme.md
+__pycache__/

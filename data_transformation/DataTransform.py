@@ -18,7 +18,8 @@ class DataTransform:
     @staticmethod
     def create_directory(submission_id):
 
-        Path(f"data_transformation/Graphs/{submission_id}").mkdir(parents=True, exist_ok=True)
+        # Create the new submission id directory
+        Path(f"output/graphs/{submission_id}").mkdir(parents=True, exist_ok=True)
 
     def create_df(self, submission_id, comments_dict):
 
@@ -118,7 +119,7 @@ class DataTransform:
         plt.tight_layout()
 
         # Save Plot
-        plt.savefig(f"data_transformation/Graphs/{submission_id}/overall_sentiment_and_upvotes.png")
+        plt.savefig(f"output/graphs/{submission_id}/overall_sentiment_and_upvotes.png")
 
     @staticmethod
     def overall_sentiment_replies(submission_id, sentiment_stats):
@@ -145,7 +146,7 @@ class DataTransform:
         plt.tight_layout()
 
         # Save Plot
-        plt.savefig(f"data_transformation/Graphs/{submission_id}/overall_sentiment_and_replies.png")
+        plt.savefig(f"output/graphs/{submission_id}/overall_sentiment_and_replies.png")
 
     @staticmethod
     def sentiment_timeline(submission_id, comment_df):
@@ -154,7 +155,7 @@ class DataTransform:
         ax1 = comment_df.plot.scatter(x='Date', y='Sentiment Polarity', c='Upvotes', colormap="viridis", rot=90)
 
         # Save Plot
-        plt.savefig(f"data_transformation/Graphs/{submission_id}/sentiment_timeline.png")
+        plt.savefig(f"output/graphs/{submission_id}/sentiment_timeline.png")
 
     @staticmethod
     def sentiment_pie(submission_id, comment_df):
@@ -168,4 +169,4 @@ class DataTransform:
                                                           autopct='%1.1f%%')
 
         # Save Plot
-        plt.savefig(f"data_transformation/Graphs/{submission_id}/sentiment_pie.png")
+        plt.savefig(f"output/graphs/{submission_id}/sentiment_pie.png")

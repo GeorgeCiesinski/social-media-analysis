@@ -28,7 +28,7 @@ def plot_all_graphs(database_manager, data_transform, submission_id):
 	# Create Dataframes
 	comment_df, sentiment_stats = data_transform.create_df(submission_id, comments_dict)
 
-	# Plot all Graphs
+	# Plot all graphs
 	data_transform.overall_sentiment_replies(submission_id, sentiment_stats)
 	data_transform.overall_sentiment_upvotes(submission_id, sentiment_stats)
 	data_transform.sentiment_timeline(submission_id, comment_df)
