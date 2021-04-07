@@ -18,7 +18,8 @@ class DataTransform:
     @staticmethod
     def create_directory(submission_id):
 
-        Path(f"data_transformation/Graphs/{submission_id}").mkdir(parents=True, exist_ok=True)
+        # Create the new submission id directory
+        Path(f"output/graphs/{submission_id}").mkdir(parents=True, exist_ok=True)
 
     def create_df(self, submission_id, comments_dict):
 
@@ -91,10 +92,15 @@ class DataTransform:
 
         self.create_directory(submission_id)
 
+        # Completion notice
+        logger.info('Scrape Complete. See outputs.')
+
         return comment_df, sentiment_stats
 
     @staticmethod
     def overall_sentiment_upvotes(submission_id, sentiment_stats):
+
+        logger.info(f'Plotting overall_sentiment_upvotes for submission_id: {submission_id}.')
 
         # Creating axes object and defining plot for "Overall Sentiment & Upvotes
         ax = sentiment_stats.plot(kind='bar', x='Sentiment Range',
@@ -118,10 +124,14 @@ class DataTransform:
         plt.tight_layout()
 
         # Save Plot
-        plt.savefig(f"data_transformation/Graphs/{submission_id}/overall_sentiment_and_upvotes.png")
+        plt.savefig(f"output/graphs/{submission_id}/overall_sentiment_and_upvotes.png")
+
+        logger.info('Plotting complete.')
 
     @staticmethod
     def overall_sentiment_replies(submission_id, sentiment_stats):
+
+        logger.info(f'Plotting overall_sentiment_replies for submission_id: {submission_id}.')
 
         # Creating axes object and defining plot
         ax = sentiment_stats.plot(kind='bar', x='Sentiment Range',
@@ -145,19 +155,27 @@ class DataTransform:
         plt.tight_layout()
 
         # Save Plot
-        plt.savefig(f"data_transformation/Graphs/{submission_id}/overall_sentiment_and_replies.png")
+        plt.savefig(f"output/graphs/{submission_id}/overall_sentiment_and_replies.png")
+
+        logger.info('Plotting complete.')
 
     @staticmethod
     def sentiment_timeline(submission_id, comment_df):
+
+        logger.info(f'Plotting sentiment_timeline for submission_id: {submission_id}.')
 
         # Create scatterplot for timeline vs sentiment
         ax1 = comment_df.plot.scatter(x='Date', y='Sentiment Polarity', c='Upvotes', colormap="viridis", rot=90)
 
         # Save Plot
-        plt.savefig(f"data_transformation/Graphs/{submission_id}/sentiment_timeline.png")
+        plt.savefig(f"output/graphs/{submission_id}/sentiment_timeline.png")
+
+        logger.info('Plotting complete.')
 
     @staticmethod
     def sentiment_pie(submission_id, comment_df):
+
+        logger.info(f'Plotting sentiment_pie for submission_id: {submission_id}.')
 
         # Create pie graph for sentiment distribution
         sentiment_description_df = comment_df.groupby("Sentiment Description").agg(
@@ -168,4 +186,6 @@ class DataTransform:
                                                           autopct='%1.1f%%')
 
         # Save Plot
-        plt.savefig(f"data_transformation/Graphs/{submission_id}/sentiment_pie.png")
+        plt.savefig(f"output/graphs/{submission_id}/sentiment_pie.png")
+
+        logger.info('Plotting complete.')
