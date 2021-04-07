@@ -266,9 +266,11 @@ class DatabaseManager:
 
 		logger.info(f'Extracting comments and sentiment for submission {submission_id} from the database.')
 
-		result = self.session.query(Comment).options(
-			joinedload(Comment.sentiment)
-		).all()
+		result = self.session.query(Comment) \
+			.filter(Comment.submission_id == submission_id) \
+			.options(
+				joinedload(Comment.sentiment)
+			).all()
 
 		# Store comments as dicts in a list stored in the 'data' key.
 		comments_dict = {

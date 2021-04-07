@@ -11,7 +11,7 @@ sentiment analysis, PostgreSQL and SQLAlchemy, data scraping, and collaboration.
 * [Overview](#Overview)
 * [Data Analysis](#Data Analysis)
 * [Installation](#Installation)
-* [Usage](#Usage)
+* [How to use social-media-analysis](#How to use social-media-analysis)
 * [Contributors](#Contributors)
 
 ## Overview
@@ -44,11 +44,57 @@ topics, events, or social media posts.
 
 ## Installation
 
+1. Clone this repository to a local directory.
+2. Install `requirements.txt` for Windows or `requirements-binary.txt` for Mac / Linux. Note: The
+   requirements.txt file contains psycopg2 while the requirements-binary.txt file contains psycopg2-binary.
+3. Create a `connection_string.txt` file in the `config` directory. This file requires a database
+   connection string in the below format.
+   
+```
+postgres://username:password@connection_url/database_name
+```
 
+4. Create a `login.ini` file in the `config` directory. This file requires PRAW login
+   information in the below format. To get this information, you must first register
+   a Reddit bot account.
+   
+```
+[login]
+client_id = [your client id]
+client_secret = [your client_secret]
+password = [your password]
+user_agent = [your user_agent]
+username = [your username]
+```
 
-## Usage
+Once you have completed these steps, the bot is ready to be ran.
 
-Words about who can use our code
+## How to use social-media-analysis
+
+### Instructions
+
+1. Open the scrape_job_list.txt file. Enter the URL of each submission to be scraped on separate lines.
+2. Run the `data_collector.py` file. This script will populate the database with the submission data and
+   update the `job/plot_job_list.txt` file with the submission ids. This process can take a long time depending
+   on the number of comments, so be patient during this process.
+3. Run the `data_plotter.py` file. This will look up the submissions in the `job/plot_job_list.txt` file and
+   will generate folders in the `output/graphs/` directory named after the submission ids. These folders will
+   contain all the generated graphs for the submissions.
+
+### Job Lists and Job Failure
+
+**social-media-analysis** uses the `scrape_job_list.txt` and `plot_job_list.txt` files to determine which jobs
+to run. Once the job is ran, it is removed from the list. 
+
+Sometimes jobs can fail for a number of different reasons. There might be an error in the URL, or the network connection
+may be down. **social-media-analysis** only removes the jobs from the job list if data collection or
+plotting is successful. In the event of failure, you should find the failed job in the job list.
+
+### Logging
+
+**social-media-analysis** takes logs during the data collection and plotting process. In the event of job failure, you can 
+find these logs in the `logs/` directory within a file called `social-media-analysis.log`. This will most
+likely contain the error that was experienced, and which job caused the error. 
 
 ## Contributors
 

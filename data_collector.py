@@ -41,21 +41,6 @@ def scrape_submission(submission_url):
 	SentimentAnalysis.list_parser(comments_dict)
 
 	'''
-	Text Output for Debugging
-	'''
-
-	# Output submission data
-	with open('output/submission_dict.txt', "w+") as text_file:
-		text_file.write(str(submission_dict))
-
-	# Output comment data
-	with open('output/comments_dict.txt', "w+") as text_file:
-		text_file.write(str(comments_dict))
-
-	# Completion notice
-	logger.info('Scrape Complete. See outputs.')
-
-	'''
 	Insert to Database
 	'''
 
