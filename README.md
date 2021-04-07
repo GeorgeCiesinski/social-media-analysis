@@ -9,9 +9,9 @@ sentiment analysis, PostgreSQL and SQLAlchemy, data scraping, and collaboration.
 ## Table of Contents
 
 * [Overview](#Overview)
-* [Data Analysis](#Data Analysis)
+* [Data Analysis](#Data-Analysis)
 * [Installation](#Installation)
-* [How to use social-media-analysis](#How to use social-media-analysis)
+* [How to use social-media-analysis](#How-to-use-social-media-analysis)
 * [Contributors](#Contributors)
 
 ## Overview
