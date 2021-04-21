@@ -26,13 +26,14 @@ def plot_all_graphs(database_manager, data_transform, submission_id):
 	comments_dict = database_manager.extract_comments_sentiment(submission_dict)
 
 	# Create Dataframes
-	comment_df, sentiment_stats = data_transform.create_df(submission_id, comments_dict)
+	comment_df, sentiment_stats, timeline_df = data_transform.create_df(submission_id, comments_dict)
 
 	# Plot all graphs
-	data_transform.overall_sentiment_replies(submission_id, sentiment_stats)
-	data_transform.overall_sentiment_upvotes(submission_id, sentiment_stats)
+	data_transform.reply_timeline(submission_id, timeline_df)
 	data_transform.sentiment_timeline(submission_id, comment_df)
 	data_transform.sentiment_pie(submission_id, comment_df)
+	data_transform.total_comments_and_replies(submission_id, sentiment_stats)
+	data_transform.total_comments_and_upvotes(submission_id, sentiment_stats)
 
 
 def execute_job_list():

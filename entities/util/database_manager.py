@@ -78,7 +78,7 @@ class DatabaseManager:
 	def insert_submission(self, submission_dict):
 		"""
 		Creates a submission object, inserts into the database, and returns the object with newly generated id.
-
+d
 		:param dict submission_dict: Dict containing submission information
 		:return Submission submission: An instance of the Submission object
 		"""

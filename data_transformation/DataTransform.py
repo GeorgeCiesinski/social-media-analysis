@@ -7,6 +7,7 @@ Date: March 11 2021
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
+import pylab
 
 from logs.Logger import base_logger
 
@@ -64,10 +65,14 @@ class DataTransform:
 
         # rename columns
         comment_df = comment_df.rename(
-            columns={0: "Author", 1: "Comment", 2: "Date", 3: "ID", 4: "Number of Replies", 5: "Saved", 6: "Upvotes",
+            columns={0: "Author", 1: "Comment", 2: "Datetime", 3: "ID", 4: "Number of Replies", 5: "Saved", 6: "Upvotes",
                      7: "Sentiment Polarity", 8: "Sentiment Description"})
         comment_df['Sentiment Polarity'] = pd.DataFrame(comment_df['Sentiment Polarity'].values.tolist())
         comment_df.head()
+
+        # convert to datetime
+        #comment_df['Date'] = pd.to_datetime(comment_df['Datetime']).dt.date
+        comment_df['Date'] = comment_df['Datetime'].apply(lambda t: t.replace(second=0, minute=0))
 
         # create bins column
         bins = [-1, -.75, -.5, -.25, 0, .25, .5, .75, 1]
@@ -79,83 +84,61 @@ class DataTransform:
         sentiment_stats = comment_df.groupby("Sentiment Range").agg(
             id_count=('ID', 'count'),
             score_sum=('Upvotes', 'sum'),
+            score_avg=('Upvotes', 'mean'),
             replies_count=('Number of Replies', 'sum'),
+            replies_avg_count=('Number of Replies', 'mean'),
         )
         sentiment_stats = sentiment_stats.reset_index()
         sentiment_stats['Sentiment Range'] = sentiment_stats['Sentiment Range'].astype(str)
 
         # Rename DataFrame
         sentiment_stats = sentiment_stats.rename(
-            columns={"id_count": "Total Count", "score_sum": "Total Upvotes", "replies_count": "Total Replies"})
+            columns={"id_count": "Total Comments", "score_sum": "Total Upvotes", "score_avg":"Average Upvotes", "replies_count": "Total Replies", "replies_avg_count": "Average Replies"})
 
         logger.info('Successfully generated dataframes.')
 
         self.create_directory(submission_id)
 
+        # Create timeline dataframe
+        timeline_df = comment_df.groupby("Date").agg(
+            id_count=('ID', 'count'),
+            score_sum=('Upvotes', 'sum'),
+            replies_count=('Number of Replies', 'sum'),
+        )
+        timeline_df = timeline_df.reset_index()
+        #timeline_df = timeline_df[timeline_df.Upvotes != 0]
+
         # Completion notice
         logger.info('Scrape Complete. See outputs.')
 
-        return comment_df, sentiment_stats
+        return comment_df, sentiment_stats, timeline_df
 
     @staticmethod
-    def overall_sentiment_upvotes(submission_id, sentiment_stats):
+    def reply_timeline(submission_id, timeline_df):
 
-        logger.info(f'Plotting overall_sentiment_upvotes for submission_id: {submission_id}.')
+        logger.info(f'Plotting reply_timeline for submission_id: {submission_id}.')
 
         # Creating axes object and defining plot for "Overall Sentiment & Upvotes
-        ax = sentiment_stats.plot(kind='bar', x='Sentiment Range',
-                                  y='Total Count', color='Blue',
-                                  linewidth=3, rot=90)
+        ax = timeline_df.plot(kind='line', x='Date',
+                              y='id_count', color='cornflowerblue',
+                              linewidth=3, rot=45, label='Total Comments')
 
-        ax2 = sentiment_stats.plot(kind='line', x='Sentiment Range',
-                                   y='Total Upvotes', secondary_y=True,
-                                   color='Red', linewidth=3, rot=90,
-                                   ax=ax)
-
-        # Title of the plot
-        plt.title("Overall Sentiment & Upvotes")
-
-        # Labeling x and y-axis
-        ax.set_xlabel('Sentiment Range', color='black')
-        ax.set_ylabel('Sentiment Count', color="b")
-        ax2.set_ylabel('Total Upvotes', color='r')
-
-        # Defining display layout
-        plt.tight_layout()
-
-        # Save Plot
-        plt.savefig(f"output/graphs/{submission_id}/overall_sentiment_and_upvotes.png")
-
-        logger.info('Plotting complete.')
-
-    @staticmethod
-    def overall_sentiment_replies(submission_id, sentiment_stats):
-
-        logger.info(f'Plotting overall_sentiment_replies for submission_id: {submission_id}.')
-
-        # Creating axes object and defining plot
-        ax = sentiment_stats.plot(kind='bar', x='Sentiment Range',
-                                  y='Total Count', color='Blue',
-                                  linewidth=3, rot=90)
-
-        ax2 = sentiment_stats.plot(kind='line', x='Sentiment Range',
-                                   y='Total Replies', secondary_y=True,
-                                   color='Green', linewidth=3, rot=90,
-                                   ax=ax)
+        ax2 = timeline_df.plot(kind='line', x='Date',
+                               y='score_sum', secondary_y=True,
+                               color='coral', linewidth=3, rot=45, label='Total Upvotes',
+                               ax=ax)
 
         # Title of the plot
-        plt.title("Overall Sentiment & Total Replies")
+        plt.title("Total Comments and Upvotes vs Time")
 
         # Labeling x and y-axis
-        ax.set_xlabel('Sentiment Range', color='black')
-        ax.set_ylabel('Sentiment Count', color="b")
-        ax2.set_ylabel('Total Replies', color='g')
-
-        # Defining display layout
-        plt.tight_layout()
+        ax.set_xlabel('Datet - Hour (UTC)', color='black')
+        ax.set_ylabel('Total Comments', color="cornflowerblue")
+        ax2.set_ylabel('Total Upvotes', color='coral')
 
         # Save Plot
-        plt.savefig(f"output/graphs/{submission_id}/overall_sentiment_and_replies.png")
+        plt.tight_layout()
+        plt.savefig(f"output/graphs/{submission_id}/reply_timeline.png")
 
         logger.info('Plotting complete.')
 
@@ -165,9 +148,10 @@ class DataTransform:
         logger.info(f'Plotting sentiment_timeline for submission_id: {submission_id}.')
 
         # Create scatterplot for timeline vs sentiment
-        ax1 = comment_df.plot.scatter(x='Date', y='Sentiment Polarity', c='Upvotes', colormap="viridis", rot=90)
-
+        ax1 = comment_df.plot.scatter(x='Date', y='Sentiment Polarity', c='Upvotes', colormap="viridis", rot=45, title='Sentiment over Time')
+        ax1.set_xlabel('Date - Hour (UTC)', color='black')
         # Save Plot
+        plt.tight_layout()
         plt.savefig(f"output/graphs/{submission_id}/sentiment_timeline.png")
 
         logger.info('Plotting complete.')
@@ -182,10 +166,40 @@ class DataTransform:
             total_count=('ID', 'count')
         )
 
-        sentiment_pie = sentiment_description_df.plot.pie(y='total_count', figsize=(5, 5), shadow=True,
+        sentiment_pie = sentiment_description_df.plot.pie(y='total_count', figsize=(5, 5), shadow=True, title='Sentiment Distribution', colors=["lightcoral","moccasin","lightgreen"], labeldistance=None,
                                                           autopct='%1.1f%%')
+        pylab.ylabel('')
+        # Save Plot
+        plt.tight_layout()
+        plt.savefig(f"output/graphs/{submission_id}/sentiment_pie.png")
+
+        logger.info('Plotting complete.')
+
+
+    @staticmethod
+    def total_comments_and_replies(submission_id, sentiment_stats):
+
+        logger.info(f'Plotting total_comments_and_replies for submission_id: {submission_id}.')
+
+        # Creating axes object and defining plot
+        sentiment_stats.plot(x="Sentiment Range", y=["Total Comments", "Total Replies"], kind="bar", color=["cornflowerblue","mediumturquoise"], figsize=(9, 8), title="Total Comments and Total Replies vs. Sentiment", rot=45)
 
         # Save Plot
-        plt.savefig(f"output/graphs/{submission_id}/sentiment_pie.png")
+        plt.tight_layout()
+        plt.savefig(f"output/graphs/{submission_id}/total_comments_and_replies.png")
+
+        logger.info('Plotting complete.')
+
+    @staticmethod
+    def total_comments_and_upvotes(submission_id, sentiment_stats):
+
+        logger.info(f'Plotting total_comments_and_upvotes for submission_id: {submission_id}.')
+
+        # Creating axes object and defining plot
+        sentiment_stats.plot(x="Sentiment Range", y=["Total Comments", "Total Upvotes"], kind="bar", color=["cornflowerblue","coral"], figsize=(9, 8), title="Total Comments and Total Upvotes vs. Sentiment", rot=45)
+
+        # Save Plot
+        plt.tight_layout()
+        plt.savefig(f"output/graphs/{submission_id}/total_comments_and_upvotes.png")
 
         logger.info('Plotting complete.')
