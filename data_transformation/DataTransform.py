@@ -71,7 +71,6 @@ class DataTransform:
         comment_df.head()
 
         # convert to datetime
-        #comment_df['Date'] = pd.to_datetime(comment_df['Datetime']).dt.date
         comment_df['Date'] = comment_df['Datetime'].apply(lambda t: t.replace(second=0, minute=0))
 
         # create bins column
@@ -106,7 +105,6 @@ class DataTransform:
             replies_count=('Number of Replies', 'sum'),
         )
         timeline_df = timeline_df.reset_index()
-        #timeline_df = timeline_df[timeline_df.Upvotes != 0]
 
         # Completion notice
         logger.info('Scrape Complete. See outputs.')
@@ -132,7 +130,7 @@ class DataTransform:
         plt.title("Total Comments and Upvotes vs Time")
 
         # Labeling x and y-axis
-        ax.set_xlabel('Datet - Hour (UTC)', color='black')
+        ax.set_xlabel('Date - Hour (UTC)', color='black')
         ax.set_ylabel('Total Comments', color="cornflowerblue")
         ax2.set_ylabel('Total Upvotes', color='coral')
 
@@ -174,7 +172,6 @@ class DataTransform:
         plt.savefig(f"output/graphs/{submission_id}/sentiment_pie.png")
 
         logger.info('Plotting complete.')
-
 
     @staticmethod
     def total_comments_and_replies(submission_id, sentiment_stats):
